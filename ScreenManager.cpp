@@ -8,6 +8,9 @@ int main(int argv, char** argc) {
 	const unsigned int WIDTH = sf::VideoMode::getDesktopMode().width * 2 / 3;
 	const unsigned int HEIGHT = std::max(WIDTH / 3, sf::VideoMode::getDesktopMode().height * 2 / 3);
 	sf::RenderWindow renderWindow(sf::VideoMode(WIDTH, HEIGHT), "Demo Game");
+
+	renderWindow.setFramerateLimit(30);
+
 	MenuScreen menuScreen;
 	GameScreen gameScreen;
 

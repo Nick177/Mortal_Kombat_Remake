@@ -23,22 +23,13 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	bool Running = true;
 	sf::Event event;
 	sf::Texture texture;
-	//texture.setSmooth(true);
 
 	if (!texture.loadFromFile("Images/mortalKombat_Scorpion.png"))
 	{
 		std::cout << "Error\n";
 	}
 
-	sf::Sprite player;
-	sf::IntRect rect(10, 15, 56, 114);
-	player.setTexture(texture);
-	player.setTextureRect(rect);
-	std::cout << player.getTextureRect().height << ", " << player.getTextureRect().width << std::endl;
-	player.setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
-	player.setScale(sf::Vector2f(2.5, 2.5));
-	std::cout << player.getTextureRect().height << ", " << player.getTextureRect().width << std::endl;
-
+	
 	while (Running) {
 		
 		while (window.pollEvent(event)) {
@@ -48,10 +39,12 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		} // end inner while loop (event loop)
 		window.clear();
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
 
-		window.draw(player);
+		}
+
 		window.display();
-
 
 	} // end outer while loop (Game loop)
 
