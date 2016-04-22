@@ -15,7 +15,7 @@ public:
 //Implementation
 //***********************************************
 GameScreen::GameScreen() {
-	
+
 }
 
 int GameScreen::Run(sf::RenderWindow &window) {
@@ -24,14 +24,18 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	sf::Event event;
 	sf::Texture texture;
 
-	if (!texture.loadFromFile("Images/mortalKombat_Scorpion.png"))
+	//Nick And Windows
+	//if (!texture.loadFromFile("Images=/mortalKombat_Scorpion.png"))
+
+	//Michael And Linux
+	if(!texture.loadFromFile("graphics/scorpion.png"))
 	{
 		std::cout << "Error\n";
 	}
 
 	
 	while (Running) {
-		
+
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::EventType::Closed) {
 				return -1; // exit
