@@ -55,20 +55,16 @@ void Character::updateMovement()
 	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::B);
 	punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
 	if (punching)
-	{
-		//clock.restart();
-		punchingPhases = 3;
+	{		punchingPhases = 3;
 		punching = false;
 	}
 	if(punchingPhases > 0) {
 		
 		switch (counterPunching) {
 			case 2:
-				std::cout << "Here1" << std::endl;
 				sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 70, 106));
 				break;
 			default:
-				std::cout << "Here2" << std::endl;
 				sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 50, 106));
 				break;
 		}
@@ -93,8 +89,6 @@ void Character::updateMovement()
 		sprite.setTextureRect(sf::IntRect( counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, WALKING_HEIGHT));
 		direction = 3;
 		ableToMoveDown = true;
-		//counterWalking++;
-
 	}
 	
 	else if (leftKeyPressed) {

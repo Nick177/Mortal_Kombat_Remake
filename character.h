@@ -32,7 +32,6 @@ private:
 	int counterPunching;
 	int punchingPhases;
 	int otherCounter;
-	Clock clock;
 
 	const int STANCE_WIDTH = 50;
 	const int STANCE_HEIGHT = 106;
