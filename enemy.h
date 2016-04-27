@@ -3,6 +3,7 @@
 #define ENEMY_H
 
 #include "SFML\Graphics.hpp"
+#include "character.h"
 
 class Enemy : public Character
 {

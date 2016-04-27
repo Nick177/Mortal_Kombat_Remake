@@ -3,6 +3,7 @@
 #define GAME_SCREEN_H
 
 #include "screen.h"
+#include "character.h"
 
 class GameScreen : public Screen
 {
@@ -26,12 +27,16 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 	//Nick And Windows
 	//if (!texture.loadFromFile("Images=/mortalKombat_Scorpion.png"))
-
+	window.setFramerateLimit(30);
 	//Michael And Linux
-	if(!texture.loadFromFile("graphics/scorpion.png"))
-	{
-		std::cout << "Error\n";
-	}
+	Character player;
+
+	player.sprite.setPosition(200, 200);
+
+	player.sprite.setScale(sf::Vector2f(1.5, 1.5));
+	player.sprite.setTextureRect(sf::IntRect(0, 0, 50, 106));
+
+
 
 	
 	while (Running) {
@@ -47,7 +52,9 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		{
 
 		}
-
+		player.updateMovement();
+		player.update();
+		window.draw(player.sprite);
 		window.display();
 
 	} // end outer while loop (Game loop)
