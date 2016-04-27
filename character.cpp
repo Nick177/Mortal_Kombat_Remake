@@ -17,8 +17,6 @@ Character::Character()
 	counterPunching = 0;
 	punchingPhases = 0;
 	otherCounter = 0;
-	clock.restart();
-
 
 	isMoving = false;
 	health = 100;
