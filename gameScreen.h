@@ -3,7 +3,8 @@
 #define GAME_SCREEN_H
 
 #include "screen.h"
-#include "character.h"
+#include "player.h"
+#include "enemy.h"
 
 class GameScreen : public Screen
 {
@@ -29,14 +30,21 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	//if (!texture.loadFromFile("Images=/mortalKombat_Scorpion.png"))
 	window.setFramerateLimit(30);
 	//Michael And Linux
-	Character player;
+	Player player;
 
-	player.sprite.setPosition(200, 200);
 
 	player.sprite.setScale(sf::Vector2f(1.5, 1.5));
 	player.sprite.setTextureRect(sf::IntRect(0, 0, 50, 106));
 
+	player.rect.setPosition(sf::Vector2f(window.getSize().x / 3, window.getSize().y / 2));
 
+
+	Enemy enemy;
+
+	enemy.sprite.setScale(sf::Vector2f(-1.5, 1.5));
+	enemy.sprite.setTextureRect(sf::IntRect(0, 0, 50, 106));
+
+	enemy.rect.setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
 
 	
 	while (Running) {
@@ -48,13 +56,23 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		} // end inner while loop (event loop)
 		window.clear();
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-
+		if (player.attackBox.getGlobalBounds().intersects(enemy.hitBox.getGlobalBounds())) {
+			enemy.setIsHit(true);
 		}
+		else {
+			enemy.setIsHit(false);
+		}
+
+
 		player.updateMovement();
 		player.update();
+		enemy.update();
+		enemy.updateMovement();
 		window.draw(player.sprite);
+		window.draw(enemy.sprite);
+		window.draw(player.attackBox);
+		window.draw(enemy.hitBox);
+		
 		window.display();
 
 	} // end outer while loop (Game loop)

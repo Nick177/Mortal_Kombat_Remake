@@ -5,9 +5,11 @@
 #include "SFML\Graphics.hpp"
 using namespace sf;
 
+#include<iostream>
+
 class Character
 {
-private:
+protected:
 	float health;
 	bool isMoving;
 	bool isAlive;
@@ -25,6 +27,7 @@ private:
 
 	bool blocking;
 	bool punching;
+	bool isHit;
 
 	int counter;
 	int counterStance;
@@ -38,14 +41,17 @@ private:
 	const int WALKING_HEIGHT = 110;
 	const int WALKING_WIDTH = 50;
 	
-	RectangleShape rect;
+protected:
 	Texture texture;
 public:
 	Character();
 	Sprite sprite;
+	RectangleShape rect;
+	RectangleShape hitBox;
+	RectangleShape attackBox;
 
-	void update();
-	void updateMovement();
+	virtual void update();
+	virtual void updateMovement()=0;
 
 	//getters and boolean functions
 	float getMovementSpeed() const { return movementSpeed; }
@@ -63,11 +69,9 @@ public:
 	bool isLeftKeyPressed() { return leftKeyPressed; }
 	bool isRightKeyPressed() { return rightKeyPressed; }
 
+	virtual void updateRect()=0;
+
 	//setters
-	void setGetMovementSpeed(float movementSpeed);
-	void setDirection(int direction);
-	void setHealth(float health);
-	void setCounterWalking(int counterWalking);
 
 };
 

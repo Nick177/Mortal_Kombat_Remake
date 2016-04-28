@@ -11,6 +11,11 @@ private:
 
 public:
 	Enemy();
+	void updateMovement();
+	void updateRect();
+	void update();
+
+	void setIsHit(bool hit) { isHit = hit; }
 };
 
 #endif
