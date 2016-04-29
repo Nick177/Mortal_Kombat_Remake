@@ -2,7 +2,6 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include "SFML\Graphics.hpp"
 #include "character.h"
 
 class Enemy : public Character
@@ -11,9 +10,9 @@ private:
 
 public:
 	Enemy();
-	void updateMovement();
-	void updateRect();
-	void update();
+	virtual void updateMovement();
+	virtual void updateRect();
+	virtual void update();
 
 	void setIsHit(bool hit) { isHit = hit; }
 };

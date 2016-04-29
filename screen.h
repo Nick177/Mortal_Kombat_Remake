@@ -8,12 +8,7 @@
 
 class Screen {
 public:
-	Screen(void);
 	virtual int Run(sf::RenderWindow &window) = 0;
 };
 
 #endif
-
-Screen::Screen() {
-
-}

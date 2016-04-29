@@ -7,10 +7,13 @@
 class Player : public Character {
 private:
 	const float scaleMultiplier = 1.5;
+	sf::Clock clock;
+	int counterHit;
+	bool isFinishedReacting;
 public:
 	Player();
-	void updateMovement();
-	void updateRect();
+	virtual void updateMovement();
+	virtual void updateRect();
 };
 
 #endif

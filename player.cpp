@@ -1,6 +1,8 @@
 #include "player.h"
+
 Player::Player() : Character()
 {
+	clock.restart();
 	if (!texture.loadFromFile("Images/SubZeroMoves.png"))
 		std::cout << "Error" << std::endl;
 	else
@@ -9,6 +11,8 @@ Player::Player() : Character()
 	}
 	rect.setSize(sf::Vector2f(50 * 1.5, 106 * 1.5));
 	//rect.setFillColor(sf::Color::Blue);
+	counterHit = 0;
+	isFinishedReacting = true;
 }
 void Player::updateMovement()
 {
@@ -17,12 +21,33 @@ void Player::updateMovement()
 	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
 	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::B);
 	punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
-	if (punching)
+	isHit = sf::Keyboard::isKeyPressed(sf::Keyboard::H);
+
+	if (isHit)
+	{
+		//clock.restart();
+		isHit = false;
+		isFinishedReacting = false;
+	}
+	if (!isFinishedReacting) {
+		if (counter % 3 == 0)
+		{
+			counterHit++;
+		}
+
+		sprite.setTextureRect(sf::IntRect(counterHit * 50, 11 * 106 + 330, 50, 106));
+
+		if (counterHit == 2) {
+			counterHit = 0;
+			isFinishedReacting = true;
+		}
+	}
+	else if (punching)
 	{
 		punchingPhases = 3;
 		punching = false;
 	}
-	if (punchingPhases > 0) {
+	else if (punchingPhases > 0) {
 
 		switch (counterPunching) {
 		case 2:
