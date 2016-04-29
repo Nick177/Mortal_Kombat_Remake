@@ -2,14 +2,15 @@
 #include "gameScreen.h"
 #include <vector>
 
-int main(int argv, char** argc) {
+int main() {
 	std::vector<Screen*> screens;
-	int currentScreen = 1;
+	const int FRAME_RATE = 50;
+	int currentScreen = 0;
 	const unsigned int WIDTH = sf::VideoMode::getDesktopMode().width * 2 / 3;
 	const unsigned int HEIGHT = std::max(WIDTH / 3, sf::VideoMode::getDesktopMode().height * 2 / 3);
 	sf::RenderWindow renderWindow(sf::VideoMode(WIDTH, HEIGHT), "Demo Game");
 
-	renderWindow.setFramerateLimit(30);
+	renderWindow.setFramerateLimit(FRAME_RATE);
 
 	MenuScreen menuScreen;
 	GameScreen gameScreen;
