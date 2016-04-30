@@ -12,7 +12,7 @@ private:
 
 public:
 	Enemy();
-	virtual void updateMovement();
+	virtual void updateMovement(short attackType, bool toClose);
 	virtual void updateRect();
 	virtual void update();
 };

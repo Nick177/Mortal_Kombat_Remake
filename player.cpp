@@ -16,7 +16,7 @@ Player::Player() : Character()
 	hitBox.setOutlineThickness(5);
 	hitBox.setSize(sf::Vector2f(35 * 1.5, 106 * 1.5));
 }
-void Player::updateMovement()
+void Player::updateMovement(short attackType, bool toClose)
 {
 	//*********** Player input *****************
 	rightKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
@@ -76,7 +76,6 @@ void Player::updateMovement()
 		}
 		else {
 			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
-
 		}
 	}
 
@@ -86,13 +85,11 @@ void Player::updateMovement()
 		ableToMoveDown = true;
 		if (counterWalking == 2)
 		{
-			
-			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, 110));
-
+			sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, 110));
 		}
 		else {
 			
-			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
+			sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
 		}
 	}
 	else if (downKeyPressed) {
@@ -112,7 +109,7 @@ void Player::updateMovement()
 
 	//************* counters are to slow down animation to normal speed *********************8
 	if (counter % 7 == 0 && leftKeyPressed)
-		counterWalking--;
+		counterWalkingBackwards--;
 
 	else if (counter % 7 == 0)
 	{
@@ -121,8 +118,8 @@ void Player::updateMovement()
 		counterBlocking++;
 	}
 
-	if (counterWalking == -1)
-		counterWalking = 3;
+	if (counterWalkingBackwards == -1)
+		counterWalkingBackwards = 3;
 
 	if (counterWalking == 3)
 		counterWalking = 0;

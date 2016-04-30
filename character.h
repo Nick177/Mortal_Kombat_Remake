@@ -37,6 +37,7 @@ protected:
 	int counterStance;
 	int counterBlocking;
 	int counterPunching;
+	int counterWalkingBackwards;
 
 	const int STANCE_WIDTH = 50;
 	const int STANCE_HEIGHT = 106;
@@ -58,7 +59,7 @@ public:
 	RectangleShape attackBox;
 
 	virtual void update();
-	virtual void updateMovement()=0;
+	virtual void updateMovement(short attackType, bool toClose)=0;
 
 	//getters and boolean functions
 	float getMovementSpeed() const { return movementSpeed; }

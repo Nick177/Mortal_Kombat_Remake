@@ -15,7 +15,7 @@ Enemy::Enemy() : Character() {
 	isFinishedReacting = true;
 }
 
-void Enemy::updateMovement()
+void Enemy::updateMovement(short attackType, bool toClose)
 {
 	//*********** Player input *****************
 	rightKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
@@ -76,7 +76,7 @@ void Enemy::updateMovement()
 		isMoving = true;
 		rect.move(-4, 0);
 		ableToMoveDown = true;
-		sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 5 + 100 - 10, WALKING_WIDTH, 110));
+		sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 5 + 100 - 10, WALKING_WIDTH, 110));
 	}
 	else if (downKeyPressed) {
 		isMoving = false;
@@ -95,7 +95,7 @@ void Enemy::updateMovement()
 
 	//************* counters to slow animations to look realistic **************
 	if (counter % 7 == 0 && leftKeyPressed)
-		counterWalking--;
+		counterWalkingBackwards--;
 
 	else if (counter % 7 == 0)
 	{
@@ -104,10 +104,10 @@ void Enemy::updateMovement()
 		counterBlocking++;
 	}
 
-	if (counterWalking == -1)
-		counterWalking = 3;
+	if (counterWalkingBackwards == -1)
+		counterWalkingBackwards = 8;
 
-	if (counterWalking == 3)
+	if (counterWalking == 9)
 		counterWalking = 0;
 	if (counterStance == 6)
 		counterStance = 0;

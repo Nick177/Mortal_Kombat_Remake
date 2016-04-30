@@ -74,12 +74,12 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 		std::cout << "Enemy Health: " << enemy.getHealth() << std::endl;
 		//if(!tooClose)
-		player.updateMovement();
+		player.updateMovement(0, false);
 		player.update();
 		//Commented line below is just a test
 		//player.sprite.setTextureRect(sf::IntRect(0, 11 * 106 + 330, 50, 106));
 		enemy.update();
-		enemy.updateMovement();
+		enemy.updateMovement(1, false);
 		//if (tooClose)
 			//player.updateMovement();
 		window.draw(enemy.sprite);

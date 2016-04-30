@@ -9,7 +9,7 @@ private:
 	
 public:
 	Player();
-	virtual void updateMovement();
+	virtual void updateMovement(short attackType, bool toClose);
 	virtual void updateRect();
 };
 

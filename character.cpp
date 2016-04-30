@@ -30,6 +30,9 @@ Character::Character()
 	isDefeated = false;
 	isAttacking = false;
 
+	counterWalkingBackwards = 0;
+
+
 	hitBox.setSize(sf::Vector2f(0, 0));
 	hitBox.setPosition(rect.getPosition());
 	attackBox.setSize(sf::Vector2f(0, 0));
