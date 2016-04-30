@@ -9,11 +9,17 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	bool Running = true;
 	sf::Event event;
 	sf::Texture texture;
+	sf::Clock clock;
+	bool isReacting = false;
+	bool oneAction = false;
 
 	//Nick And Windows
 	//if (!texture.loadFromFile("Images=/mortalKombat_Scorpion.png"))
 	window.setFramerateLimit(30);
 	//Michael And Linux
+
+	bool tooClose = false;
+
 	Player player;
 
 
@@ -25,11 +31,12 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 	Enemy enemy;
 
-	enemy.sprite.setScale(sf::Vector2f(-1.5, 1.5));
+	enemy.sprite.setScale(sf::Vector2f(1.5, 1.5));
 	enemy.sprite.setTextureRect(sf::IntRect(0, 0, 50, 106));
 
 	enemy.rect.setPosition(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2));
 
+	int pixelDistance = 0;
 
 	while (Running) {
 
@@ -39,25 +46,48 @@ int GameScreen::Run(sf::RenderWindow &window) {
 			}
 		} // end inner while loop (event loop)
 		window.clear();
-
-		if (player.attackBox.getGlobalBounds().intersects(enemy.hitBox.getGlobalBounds())) {
-			enemy.setIsHit(true);
+		/* Tried to figure not have fist drawn on face
+		if (player.getIsPunching()) {
+			pixelDistance = player.sprite.getPosition().x + 66 - (enemy.sprite.getPosition().x + 12);
 		}
-		else {
-			enemy.setIsHit(false);
+		
+		if (pixelDistance != 0 && pixelDistance > 0)
+			tooClose = true;
+		else
+			tooClose = false;
+			*/
+
+		if(player.attackBox.getGlobalBounds().intersects(enemy.hitBox.getGlobalBounds())) {
+			if (!oneAction) {
+				enemy.setIsHit(true);
+				enemy.takeDamage(player.getPunchDamage());
+				oneAction = true;
+			}
 		}
+		else if (enemy.attackBox.getGlobalBounds().intersects(player.hitBox.getGlobalBounds()) && tooClose) {
+			player.setIsHit(true);
+			player.takeDamage(enemy.getPunchDamage());
+		}
+		else
+			oneAction = false;
 
 
+		std::cout << "Enemy Health: " << enemy.getHealth() << std::endl;
+		//if(!tooClose)
 		player.updateMovement();
 		player.update();
 		//Commented line below is just a test
 		//player.sprite.setTextureRect(sf::IntRect(0, 11 * 106 + 330, 50, 106));
 		enemy.update();
 		enemy.updateMovement();
-		window.draw(player.sprite);
+		//if (tooClose)
+			//player.updateMovement();
 		window.draw(enemy.sprite);
-		window.draw(player.attackBox);
-		window.draw(enemy.hitBox);
+		window.draw(player.sprite);
+		
+		//window.draw(player.attackBox);
+		//window.draw(player.hitBox);
+		//window.draw(enemy.hitBox);
 
 		window.display();
 

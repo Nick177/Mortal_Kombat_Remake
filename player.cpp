@@ -10,45 +10,42 @@ Player::Player() : Character()
 		sprite.setTexture(texture);
 	}
 	rect.setSize(sf::Vector2f(50 * 1.5, 106 * 1.5));
-	//rect.setFillColor(sf::Color::Blue);
-	counterHit = 0;
-	isFinishedReacting = true;
+
+	hitBox.setFillColor(sf::Color::Transparent);
+	hitBox.setOutlineColor(sf::Color::Blue);
+	hitBox.setOutlineThickness(5);
+	hitBox.setSize(sf::Vector2f(35 * 1.5, 106 * 1.5));
 }
 void Player::updateMovement()
 {
+	//*********** Player input *****************
 	rightKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
 	leftKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
 	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
 	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::B);
-	punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
-	isHit = sf::Keyboard::isKeyPressed(sf::Keyboard::H);
+	//*****************************************
 
+	if(!punching)
+		punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
 	if (isHit)
 	{
-		//clock.restart();
-		isHit = false;
+		clock.restart();
 		isFinishedReacting = false;
+		isHit = false;
 	}
 	if (!isFinishedReacting) {
-		if (counter % 3 == 0)
+		if (clock.getElapsedTime().asSeconds() > 0.02)
 		{
-			counterHit++;
-		}
+			sprite.setTextureRect(sf::IntRect(0, 11 * 106 + 330, 50, 106));
 
-		sprite.setTextureRect(sf::IntRect(counterHit * 50, 11 * 106 + 330, 50, 106));
-
-		if (counterHit == 2) {
-			counterHit = 0;
-			isFinishedReacting = true;
+			if (clock.getElapsedTime().asSeconds() > 0.1) {
+				isFinishedReacting = true;
+			}
 		}
+		
 	}
 	else if (punching)
 	{
-		punchingPhases = 3;
-		punching = false;
-	}
-	else if (punchingPhases > 0) {
-
 		switch (counterPunching) {
 		case 2:
 			sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 70, 106));
@@ -57,33 +54,46 @@ void Player::updateMovement()
 			sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 50, 106));
 			break;
 		}
-		if (otherCounter % 3 == 0)
+		if (counter % 3 == 0)
 		{
 			counterPunching++;
-			punchingPhases--;
 		}
 		if (counterPunching == 3) {
 			counterPunching = 0;
 			punching = false;
-			otherCounter = 0;
 		}
-		otherCounter++;
-
 	}
 
 	else if (rightKeyPressed)
 	{
 		isMoving = true;
 		rect.move(4, 0);
-		sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, WALKING_HEIGHT));
-		direction = 3;
 		ableToMoveDown = true;
+		if (counterWalking == 2)
+		{
+			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, 110));
+
+		}
+		else {
+			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
+
+		}
 	}
 
 	else if (leftKeyPressed) {
 		isMoving = true;
 		rect.move(-4, 0);
-		sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, WALKING_HEIGHT));
+		ableToMoveDown = true;
+		if (counterWalking == 2)
+		{
+			
+			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, 110));
+
+		}
+		else {
+			
+			sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
+		}
 	}
 	else if (downKeyPressed) {
 		isMoving = false;
@@ -99,6 +109,8 @@ void Player::updateMovement()
 		sprite.setTextureRect(sf::IntRect(counterStance * STANCE_WIDTH, 0, STANCE_WIDTH, STANCE_HEIGHT));
 	}
 	//*****************************************************
+
+	//************* counters are to slow down animation to normal speed *********************8
 	if (counter & 7 == 0 && leftKeyPressed)
 		counterWalking--;
 
@@ -123,7 +135,11 @@ void Player::updateMovement()
 	updateRect();
 }
 void Player::updateRect() {
-	if (punchingPhases > 0) {
+
+	hitBox.setPosition(sprite.getPosition());
+
+
+	if (punching) {
 		attackBox.setSize(sf::Vector2f(
 			sprite.getGlobalBounds().width-10, sprite.getGlobalBounds().height));
 		attackBox.setFillColor(sf::Color::Transparent);

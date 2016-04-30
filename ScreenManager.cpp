@@ -5,7 +5,7 @@
 int main() {
 	std::vector<Screen*> screens;
 	const int FRAME_RATE = 50;
-	int currentScreen = 0;
+	int currentScreen = 1;
 	const unsigned int WIDTH = sf::VideoMode::getDesktopMode().width * 2 / 3;
 	const unsigned int HEIGHT = std::max(WIDTH / 3, sf::VideoMode::getDesktopMode().height * 2 / 3);
 	sf::RenderWindow renderWindow(sf::VideoMode(WIDTH, HEIGHT), "Demo Game");

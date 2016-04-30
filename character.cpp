@@ -2,12 +2,11 @@
 
 Character::Character()
 {
+	punchDamage = 5;
 	counter = 0;
 	counterStance = 0;
 	counterBlocking = 0;
 	counterPunching = 0;
-	punchingPhases = 0;
-	otherCounter = 0;
 
 	isMoving = false;
 	health = 100;
@@ -15,7 +14,6 @@ Character::Character()
 	//Need to see the difference between the different values
 	movementSpeed = 0.5;
 	counterWalking = 0;
-	direction = 0;
 
 	ableToMoveUp = true;
 	ableToMoveDown = true;
@@ -29,11 +27,16 @@ Character::Character()
 	blocking = false;
 	punching = false;
 	isHit = false;
+	isDefeated = false;
+	isAttacking = false;
 
 	hitBox.setSize(sf::Vector2f(0, 0));
 	hitBox.setPosition(rect.getPosition());
 	attackBox.setSize(sf::Vector2f(0, 0));
 	attackBox.setPosition(rect.getPosition());
+
+	counterHit = 0;
+	isFinishedReacting = true;
 }
 // Need to also include the rectangle invisible box for our Sprite
 /* sf::RectangleShape rect;
@@ -48,4 +51,11 @@ void Character::update()
 	sprite.setPosition(rect.getPosition());
 
 	// what are these functions
+}
+
+void Character::takeDamage(float damageTaken) {
+	if (health > damageTaken)
+		health -= damageTaken;
+	else
+		isDefeated = true;
 }

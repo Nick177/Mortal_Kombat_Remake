@@ -2,7 +2,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "SFML\Graphics.hpp"
+//#include "SFML\Graphics.hpp"
 using namespace sf;
 
 #include<iostream>
@@ -11,11 +11,12 @@ class Character
 {
 protected:
 	float health;
+	float punchDamage;
+	float kickDamage;
 	bool isMoving;
 	bool isAlive;
 	float movementSpeed;
 	int counterWalking;
-	int direction;
 	bool ableToMoveUp;
 	bool ableToMoveDown;
 	bool ableToMoveLeft;
@@ -27,19 +28,25 @@ protected:
 
 	bool blocking;
 	bool punching;
+	bool kicking;
 	bool isHit;
+	bool isDefeated;
+	bool isAttacking;
 
 	int counter;
 	int counterStance;
 	int counterBlocking;
 	int counterPunching;
-	int punchingPhases;
-	int otherCounter;
 
 	const int STANCE_WIDTH = 50;
 	const int STANCE_HEIGHT = 106;
-	const int WALKING_HEIGHT = 110;
+	const int WALKING_HEIGHT = 106;
 	const int WALKING_WIDTH = 50;
+
+	const float scaleMultiplier = 1.5;
+	sf::Clock clock;
+	int counterHit;
+	bool isFinishedReacting;
 	
 protected:
 	Texture texture;
@@ -55,19 +62,26 @@ public:
 
 	//getters and boolean functions
 	float getMovementSpeed() const { return movementSpeed; }
-	int getDirection() const { return direction; }
-	bool isAbleToMoveUp() { return ableToMoveUp; }
-	bool isAbleToMoveDown() { return ableToMoveDown; }
-	bool isAbleToMoveLeft() { return ableToMoveLeft; }
-	bool isAbleToMoveRight() { return ableToMoveRight; }
-	float getHealth() { return health; }
-	bool isStillAlive() { return isAlive; }
-	bool isStillMoving() { return isMoving; }
-	int getCounterWalking() { return counterWalking; }
-	bool isUpKeyPressed() { return upKeyPressed; }
-	bool isDownKeyPressed() { return downKeyPressed; }
-	bool isLeftKeyPressed() { return leftKeyPressed; }
-	bool isRightKeyPressed() { return rightKeyPressed; }
+	bool isAbleToMoveUp() const { return ableToMoveUp; }
+	bool isAbleToMoveDown() const { return ableToMoveDown; }
+	bool isAbleToMoveLeft() const { return ableToMoveLeft; }
+	bool isAbleToMoveRight() const { return ableToMoveRight; }
+	float getHealth() const { return health; }
+	bool isStillAlive() const { return isAlive; }
+	bool isStillMoving() const { return isMoving; }
+	int getCounterWalking() const  { return counterWalking; }
+	bool isUpKeyPressed() const  { return upKeyPressed; }
+	bool isDownKeyPressed() const { return downKeyPressed; }
+	bool isLeftKeyPressed() const { return leftKeyPressed; }
+	bool isRightKeyPressed() const { return rightKeyPressed; }
+	bool getIsHit() const { return isHit; }
+	float getPunchDamage() const { return punchDamage; }
+	bool getIsPunching() const { return punching; }
+
+	void takeDamage(float damageTaken);
+
+	void setIsHit(bool hit) { isHit = hit; }
+	void setIsPunching(bool punching) { this->punching = punching; }
 
 	virtual void updateRect()=0;
 
