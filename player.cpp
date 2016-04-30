@@ -111,7 +111,7 @@ void Player::updateMovement()
 	//*****************************************************
 
 	//************* counters are to slow down animation to normal speed *********************8
-	if (counter & 7 == 0 && leftKeyPressed)
+	if (counter % 7 == 0 && leftKeyPressed)
 		counterWalking--;
 
 	else if (counter % 7 == 0)

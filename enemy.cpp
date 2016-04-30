@@ -94,7 +94,7 @@ void Enemy::updateMovement()
 	//*****************************************************
 
 	//************* counters to slow animations to look realistic **************
-	if (counter & 7 == 0 && leftKeyPressed)
+	if (counter % 7 == 0 && leftKeyPressed)
 		counterWalking--;
 
 	else if (counter % 7 == 0)

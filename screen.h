@@ -2,7 +2,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-//#include "SFML/Graphics.hpp"
+#include "SFML/Graphics.hpp"
 
 #include<iostream>
 
