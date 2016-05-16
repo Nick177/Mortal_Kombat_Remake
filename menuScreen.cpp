@@ -17,19 +17,43 @@ int MenuScreen::Run(sf::RenderWindow &window) {
 	sf::Text menuItem_1;
 	sf::Text menuItem_2;
 
+	const unsigned int WIDTH = sf::VideoMode::getDesktopMode().width * 2 / 3;
+	const unsigned int HEIGHT = std::max(WIDTH / 3, sf::VideoMode::getDesktopMode().height * 2 / 3);
+
+
+	sf::Texture MK;
+	//if (!MK.loadFromFile(resourcePath() + "BackgroundMK.png"))
+	if (!MK.loadFromFile("Images/title.png"))
+		return EXIT_FAILURE;
+	sf::Sprite background(MK);
+	background.setTextureRect(sf::IntRect(0, 0, 256, 254));
+	float scaleWidth;
+	float scaleHeight;
+	if (WIDTH > background.getGlobalBounds().width && HEIGHT > background.getGlobalBounds().height) {
+		scaleWidth = (WIDTH / background.getGlobalBounds().width);
+		scaleHeight = (HEIGHT / background.getGlobalBounds().height);
+	}
+	else {
+		scaleWidth = 1;
+		scaleHeight = 1;
+	}
+
+		//256 254
+	background.setScale(sf::Vector2f(scaleWidth, scaleHeight));
+
 
 	if (!font.loadFromFile("consola.ttf"))
 	{
 		std::cout << "Font not loading correclty!!\n";
 		return(-1);
 	}
-
+	/*
 	menuTile.setFont(font);
 	menuTile.setCharacterSize(fontSize);
 	menuTile.setString("Mortal Kombat");
 	menuTile.setPosition(window.getSize().x / 2 - 20, window.getSize().y / 8);
 	menuTile.setColor(sf::Color::Green);
-
+	*/
 	menuItem_1.setFont(font);
 	menuItem_1.setCharacterSize(fontSize);
 	menuItem_1.setString("Play");
@@ -46,7 +70,7 @@ int MenuScreen::Run(sf::RenderWindow &window) {
 	while (Running) {
 
 		while (window.pollEvent(event)) {
-			std::cout << currentMenuItem << std::endl;
+			//std::cout << currentMenuItem << std::endl;
 			if (event.type == sf::Event::EventType::Closed)
 				return -1; // exit
 
@@ -57,11 +81,11 @@ int MenuScreen::Run(sf::RenderWindow &window) {
 				{
 				case sf::Keyboard::Up:
 					currentMenuItem = 0;
-					std::cout << "here" << std::endl;
+					//std::cout << "here" << std::endl;
 					break;
 				case sf::Keyboard::Down:
 					currentMenuItem = 1;
-					std::cout << "hi" << std::endl;
+					//std::cout << "hi" << std::endl;
 
 					break;
 				case sf::Keyboard::Return:
@@ -89,8 +113,10 @@ int MenuScreen::Run(sf::RenderWindow &window) {
 
 		}
 		//} // end inner while loop (event loop)
+		//std::cout << scaleWidth << std::endl << scaleHeight << std::endl;
 		window.clear();
-		window.draw(menuTile);
+		window.draw(background);
+		//window.draw(menuTile);
 		window.draw(menuItem_1);
 		window.draw(menuItem_2);
 
