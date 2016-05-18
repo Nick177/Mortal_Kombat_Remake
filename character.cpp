@@ -4,6 +4,7 @@ Character::Character()
 {	
 	if (!texture2.loadFromFile("Images/Fatalties.png"))
 		std::cout << "Error\n";
+	if(!texture3.loadFromFile("Images/Fatalities.png"))
 	if (!blockingKick.openFromFile("Audio/UseForBoth_LowBlocking.ogg"))
 		std::cout << "Error\n";
 
@@ -13,6 +14,13 @@ Character::Character()
 		std::cout << "Error\n";
 	if (!kicked.openFromFile("Sound/kicked.wav"))
 		std::cout << "Error\n";
+	if (!wins.openFromFile("Audio/win.wav"))
+		std::cout << "Error\n";
+	
+	punchingSound.setVolume(20);
+	punchedSound.setVolume(10);
+	kicked.setVolume(20);
+
 	health = 100.0;
 
 	punchDamage = 5;

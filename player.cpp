@@ -21,8 +21,13 @@ Player::Player() : Character()
 		std::cout << "Error\n";
 	if (!subZero.openFromFile("Audio/SubZero.wav"))
 		std::cout << "Error\n";
-	if (!wins.openFromFile("Audio/win.wav"))
+	if (!burningAlive.openFromFile("Audio/SubZeroOnFire.ogg"))
 		std::cout << "Error\n";
+
+	blockingPunch.setVolume(20);
+	kickingSound.setVolume(20);
+
+	
 
 	ice.setTexture(texture2);
 
@@ -30,7 +35,7 @@ Player::Player() : Character()
 	boundary.setSize(sf::Vector2f(35 * 1.5, 106 * 1.5));
 
 	hitBox.setFillColor(sf::Color::Transparent);
-	hitBox.setOutlineColor(sf::Color::Blue);
+	hitBox.setOutlineColor(sf::Color::Red);
 	hitBox.setOutlineThickness(5);
 	hitBox.setSize(sf::Vector2f(28 * 1.5, 106 * 1.5));
 	stopReacting = false;
@@ -56,13 +61,18 @@ void Player::updateMovement()
 
 	if (!downKeyPressed)
 		isCrouching = false;
+	//////////
+	if (fatalityReady && !performFatality)
+		performFatality = sf::Keyboard::isKeyPressed(sf::Keyboard::F);
 	//std::cout << counterIsKicked << std::endl;
 	//*****************************************
 	//std::cout << "is in update\n";
 	if (isWon) {
 		sprite.setTexture(texture2);
-		if(counterWin < 2)
-			sprite.setTextureRect(sf::IntRect(counterWin * 50, (820 + 110) + 25 + 295, 50, 106));
+		if(counterWin == 0)
+			sprite.setTextureRect(sf::IntRect(counterWin * 50, (820 + 110) + 25 + 290, 50, 106));
+		if(counterWin == 1)
+			sprite.setTextureRect(sf::IntRect(counterWin * 50, (820 + 110) + 25 + 282, 50, 115));
 
 		if (counterWin == 0)
 			subZero.play();
@@ -75,11 +85,30 @@ void Player::updateMovement()
 
 		return;
 	}
+	else if (burning) {
+		//std::cout << "burning\n";
+		sprite.setTexture(texture3);
 
+		sprite.setTextureRect(sf::IntRect(counterBurning * 75, (820 + 110) + 25 + 45 + 75+85+60, 75, 110));
+		if (counterBurning == 0) {
+			sprite.move(-20, 0);
+			burningAlive.play();
+		}
+
+
+		if (counter % 6 == 0)
+			counterBurning++;
+		if (counterBurning == 8)
+			counterBurning = 7;
+
+	}
+	//added else if
+	/*
 	if (fatalityReady && !performFatality)
 		performFatality = sf::Keyboard::isKeyPressed(sf::Keyboard::F);
-
-	if (performFatality) {
+		*/
+	//added else if
+	else if (performFatality) {
 		if (!notSet) {
 			notSet = true;
 			sprite.setTexture(texture2);
@@ -88,7 +117,8 @@ void Player::updateMovement()
 			ice.setTextureRect(sf::IntRect(0, 0, 0, 0));
 			performFatality = false;
 			finishHim = true;
-			sprite.setTexture(texture);
+			//sprite.setTexture(texture);
+			std::cout << "changing sprite sheet\n";
 			return;
 		}
 		if (!isDoneIce) {
@@ -112,11 +142,10 @@ void Player::updateMovement()
 			sprite.setTextureRect(sf::IntRect(0 * 100, 820, 100, 110));
 			iceRect.setPosition(sf::Vector2f(sprite.getPosition().x + 145, sprite.getPosition().y + (sprite.getGlobalBounds().height / 3 - 20)));
 		}
-		
 		if (isDoneIce && counterFatality == 0) {
 			if (!fatalityHit) {
 				ice.setTextureRect(sf::IntRect(0, (820 + 110), 110, 25));
-				iceRect.move(7, 0);
+				iceRect.move(9, 0);
 			}
 			else {
 				
@@ -152,6 +181,11 @@ void Player::updateMovement()
 
 
 	else if (!isDefeated) {
+		if (finishHim) {
+			sprite.setTexture(texture);
+			finishHim = false;
+		}
+
 		if (!punching) {
 			punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
 			//std::cout << "punching true\n";
@@ -404,9 +438,24 @@ void Player::updateMovement()
 		updateRect();
 	}
 	else {
-		isDone = true;
-	}
+		
+		if (isDefeated) {
+			sprite.setTexture(texture2);
 
+			if (hitByFatality) {
+				burning = true;
+				isDefeated = false;
+			}
+			sprite.setTextureRect(sf::IntRect(counterDizzy * 40, 600, 40, 105));
+
+			if (counter % 5 == 0)
+				counterDizzy++;
+			if (counterDizzy == 5)
+				counterDizzy = 0;
+		}
+		
+		//isDone = true;
+	}
 }
 void Player::updateRect() {
 	if (isCrouching)

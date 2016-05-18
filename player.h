@@ -40,7 +40,7 @@ private:
 	sf::Music freezing;
 	sf::Music frozenSolid;
 	sf::Music subZero;
-	sf::Music wins;
+	sf::Music burningAlive;
 
 	
 public:
@@ -52,8 +52,12 @@ public:
 	int counterWin = 0;
 	bool isStopped = false;
 	bool finishHim = false;
+	bool burning = false;
+	int counterDizzy = 0;
+	int counterBurning = 0;
 
-	void finish();
+
+//	void finish();
 
 	Player();
 	virtual void updateMovement();

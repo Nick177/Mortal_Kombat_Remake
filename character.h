@@ -90,6 +90,7 @@ protected:
 protected:
 	Texture texture;
 	Texture texture2;
+	Texture texture3;
 	sf::Music attackSound;
 	sf::Music punchedSound;
 	sf::Music punchingSound;
@@ -97,6 +98,7 @@ protected:
 	sf::Music blockingPunch;
 	sf::Music kicked;
 	sf::Music kickingSound;
+	sf::Music wins;
 public:
 	Character();
 	Sprite sprite;
@@ -159,6 +161,7 @@ public:
 	void setIsKO(bool ko) { isKO = ko; }
 	void setFatalityReady(bool ready) { fatalityReady = ready; }
 	void setHitByFatality(bool hit) { hitByFatality = hit; }
+	void setPerformFatality(bool perform) { performFatality = perform; }
 	
 
 	virtual void updateRect()=0;

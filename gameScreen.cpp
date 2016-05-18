@@ -14,6 +14,7 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	bool GameOver = false;
 
 	bool restartClock = false;
+	bool restartClock2 = false;
 
 	
 	//Nick And Windows
@@ -82,8 +83,34 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 	fight.play();
 
+	mus1.setVolume(20);
+
 	//###################################################################################
 	bool onlyOne = false;
+	bool onlyOne2 = false;
+
+
+
+	//###################################################################################
+	//Game Over text
+	const int fontSize = 100;
+	sf::Font font;
+	sf::Text gameOverTile;
+
+
+	if (!font.loadFromFile("MK4.TTF"))
+	{
+		std::cout << "Font not loading correclty!!\n";
+		return(-1);
+	}
+
+	gameOverTile.setFont(font);
+	gameOverTile.setCharacterSize(fontSize);
+	gameOverTile.setString("GameOver");
+	gameOverTile.setPosition(window.getSize().x / 2 - 200, window.getSize().y / 4);
+	gameOverTile.setColor(sf::Color::Red);
+
+	//###################################################################################
 
 	while (!GameOver) {
 
@@ -194,7 +221,7 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 		if (!enemy.getIsDefeated()) {
 			enemy.calculateDistance(player);
-			enemy.fight(player);
+			//enemy.fight(player);
 		}
 
 		//std::cout << "Enemy Health: " << enemy.getHealth() << std::endl;
@@ -227,10 +254,31 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		//Commented line below is just a test
 		//player.sprite.setTextureRect(sf::IntRect(4 * 90, 3 * 106, 90, 106));
 		//if(enemy.getFatalityReady())
-	
-		enemy.defeated();
-		enemy.update();
-		enemy.updateMovement();
+		if (enemy.isWon) {
+			enemy.victory();
+		}
+		else if (enemy.getFatalityReady()) {
+			if (!onlyOne2) {
+				finishHim.play();
+				onlyOne2 = true;
+			}
+			if (enemy.getPerformFatality())
+			{
+				enemy.calculateDistance(player);
+				enemy.doFatality(player.sprite.getPosition());
+				if (enemy.burnFoe) {
+					//player.setHitByFatality(true);
+					player.burning = true;
+				}
+			}
+		}
+		else {
+			enemy.defeated();
+			enemy.update();
+			enemy.updateMovement();
+		}
+
+
 		//enemy.sprite.setTextureRect(sf::IntRect(3 * 90, 3 * 106, 90, 106));
 		//################### testing functions for ai #####################################
 
@@ -243,9 +291,10 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		}
 		if (player.getIsDefeated()) {
 			enemy.setFatalityReady(true);
-			if (!restartClock) {
+			enemy.setPerformFatality(true);
+			if (!restartClock2) {
 				clock.restart();
-				restartClock = true;
+				restartClock2 = true;
 			}
 		}
 		//##################################################################################
@@ -269,6 +318,8 @@ int GameScreen::Run(sf::RenderWindow &window) {
 			window.draw(player.ice);
 			//window.draw(player.iceRect);
 		}
+		if (enemy.playFire)
+			window.draw(enemy.fire);
 		//window.draw(enemy.rect);
 		//window.draw(player.boundary);
 		//window.draw(enemy.boundary);
@@ -294,7 +345,13 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		//std::cout << enemy.sprite.getPosition().x << "\t";
 		//std::cout << player.sprite.getPosition().x << std::endl;
 	} // end outer while loop (Game loop)
+	clock.restart();
 
+	while (clock.getElapsedTime().asSeconds() < 7) {
+		window.draw(gameOverTile);
+		window.display();
+
+	}
 
 	return -1;
 }

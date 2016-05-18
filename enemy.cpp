@@ -13,7 +13,18 @@ Enemy::Enemy() : Character() {
 		std::cout << "Error\n";
 
 	if (!breakIce.openFromFile("Audio/iceBreaks.wav"))
-		std::cout << "break\n";
+		std::cout << "Error\n";
+	if (!Scorpion.openFromFile("Audio/Scorpion.wav"))
+		std::cout << "Error\n";
+
+	blockingPunch.setVolume(20);
+	kickingSound.setVolume(20);
+
+
+	fire.setTexture(texture2);
+	fire.setScale(sf::Vector2f(1.5, 1.5));
+	rope.setTexture(texture2);
+	rope.setScale(sf::Vector2f(1.5, 1.5));
 
 	isFinishedKickReact = false;
 
@@ -33,19 +44,39 @@ Enemy::Enemy() : Character() {
 
 }
 
+void Enemy::victory() {
+	sprite.setTexture(texture2);
+	counter++;
+	if(counterVictory == 0 || counterVictory == 1)
+		sprite.setTextureRect(sf::IntRect(counterVictory * 50, (820 + 241) + 290+ 110, 50, 135));
+
+	if (counterVictory == 0)
+		Scorpion.play();
+	if (counterVictory == 10)
+		wins.play();
+
+	if (counter % 5 == 0)
+		counterVictory++;
+	if (counterVictory == 20)
+		isVictor = true;
+}
+
 void Enemy::updateMovement()
 {
 	//##########################
 	// deleted input variable (rightkeyPressed, leftKeyPressed ...)
 	//##########################
 	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
-	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::E);
 
 	//leftKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
 	if (!downKeyPressed)
 		isCrouching = false;
 
 	if (isWon) {
+
+
+		return;
 	}
 	else if (isFrozen && hitByFatality) {
 
@@ -83,11 +114,14 @@ void Enemy::updateMovement()
 	else if (isFrozen) {
 		sprite.setTextureRect(sf::IntRect(0, 496, 50, 106));
 	}
+	/////////////////////////////
 	else if (!isDefeated) {
 		if (!punching && isFinishedReacting)
 			punching = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
 		if (!kicking && isFinishedReacting)
 			kicking = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+		if(!special && isFinishedReacting)
+			special = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
 		if (isHit)
 		{
 			clock.restart();
@@ -195,6 +229,35 @@ void Enemy::updateMovement()
 			}
 		}
 
+		else if (special) {
+			sprite.setTexture(texture2);
+			pull = true;
+			if (slingFail) {
+				counterSpecial = 0;
+				special = false;
+				sprite.setTexture(texture);
+			}
+
+			if (!pull) {
+				counterSpecial = 0;
+				sprite.setTextureRect(sf::IntRect(counterSpecial * 90, DIZZY_HEIGHT, 90, 105));
+			}
+			else {
+				sprite.setTextureRect(sf::IntRect(counterSpecial * 90, DIZZY_HEIGHT, 90, 105));
+
+			}
+
+			if (counter % 6 == 0)
+				counterSpecial++;
+
+			if (counterSpecial == 6) {
+				counterSpecial = 0;
+				special = false;
+				sprite.setTexture(texture);
+			}
+
+		}
+
 		else if (rightKeyPressed)
 		{
 			if (ableToMoveRight) {
@@ -206,7 +269,6 @@ void Enemy::updateMovement()
 			}
 			//rightKeyPressed = false;
 		}
-
 		else if (leftKeyPressed) {
 			if (ableToMoveLeft) {
 				isMoving = true;
@@ -278,6 +340,50 @@ void Enemy::updateMovement()
 		//isDone = true;
 	} // end else
 	counter++;
+}
+
+void Enemy::doFatality(sf::Vector2f pos) {
+	counter++;
+	if (!fatalityOnce) {
+		fatalityOnce = true;
+		//sprite.setTexture(texture2);
+		clock.restart();
+	}
+	if (clock.getElapsedTime().asSeconds() > 3.0) {
+		sprite.setTexture(texture2);
+		if (counterSpitFire == 0)
+			sprite.move(25, 0);
+
+		sprite.setTextureRect(sf::IntRect(counterSpitFire * 70, 275, 70, 110));
+
+		if (counterSpitFire == 5)
+			burnFoe = true;
+
+		if (counter % 5 == 0)
+			counterSpitFire++;
+		if (counterSpitFire == 6) {
+			counterSpitFire = 5;
+			playFire = true;
+			fire.setPosition(pos);
+			//fire.setPosition(sf::Vector2f(sprite.getPosition().x - 50, sprite.getPosition().y - 20));
+
+		}
+		if (playFire) {
+			if (counterFire == 0) {
+				fire.setTextureRect(sf::IntRect(counterFire * 70, 385, 70, 110));
+			}
+			else
+				fire.setTextureRect(sf::IntRect(counterFire * 70, 385, 70, 110));
+		}
+
+		if (counter % 5 == 0)
+			counterFire++;
+		if (counterFire == 12) {
+			counterFire = 11;
+			isWon = true;
+		}
+	}
+
 }
 
 void Enemy::updateRect() {
@@ -378,16 +484,11 @@ void Enemy::fight(Player& p)
 
 	srand(time(NULL));
 
-	
-
 	/*
-
 	i want to move enemy as close as 40 px
 	and make a move
 	then move back to original distance
 	(maybe to change the distance between characters)
-
-
 	*/
 	if (isPunched)
 		continuous++;
@@ -406,9 +507,7 @@ void Enemy::fight(Player& p)
 		ableToMoveDown = true;
 		leftKeyPressed = true;
 		ableToMoveLeft = true;
-
 	}
-
 
 	else if (distance <= 74) {
 
@@ -437,7 +536,7 @@ void Enemy::fight(Player& p)
 				else if (randNum == 2) {
 
 					kicking = true;
-					rect.move(5, 0);
+					//rect.move(5, 0);
 				}
 				else if(randNum == 3 || randNum == 4)
 					punching = true;
