@@ -6,7 +6,7 @@
 
 class Player : public Character {
 private:
-//################## New change 5/3 ###################
+//################## New change 5/3: Dimension variables ###################
 	const int STANCE_WIDTH = 50;
 	const int STANCE_HEIGHT = 106;
 	const int STANCE_WIDTH_BODY = 33;
@@ -35,8 +35,9 @@ private:
 	const int PUNCHING_POS = BLOCKING_POS + 106 + 106 + 106 + 106 + WALKING_HEIGHT;
 	const int KICKING_POS = PUNCHING_POS + 110 + 106 + 110 + 106 + 106 + 10;
 	//########################################################
-
-	int counterFatalityHit = 0;
+	
+	int counterFatalityHit;
+	//Sound
 	sf::Music freezing;
 	sf::Music frozenSolid;
 	sf::Music subZero;
@@ -44,27 +45,31 @@ private:
 
 	
 public:
-	
+	//sprite for the ice and corresponding rectangle
 	sf::Sprite ice;
 	sf::RectangleShape iceRect;
-	bool fatalityHit = false;
-	bool fatalityFrozen = false;
-	int counterWin = 0;
-	bool isStopped = false;
-	bool finishHim = false;
-	bool burning = false;
-	int counterDizzy = 0;
-	int counterBurning = 0;
+
+	//booleans to help with fatality and fatality reaction
+	bool fatalityHit;
+	bool fatalityFrozen;
+	int counterWin;
+	bool isStopped;
+	bool finishHim;
+	bool burning;
+	int counterDizzy;
+	int counterBurning;
+	bool hitBySpecial;
 
 
 //	void finish();
 
 	Player();
+
 	virtual void updateMovement();
 	virtual void updateRect();
-
+	//AI not activated yet
 	void AI();
-
+	//updates the ice when shot, to move to the enemy
 	void updateIce();
 };
 

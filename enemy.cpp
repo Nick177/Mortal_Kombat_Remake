@@ -17,8 +17,41 @@ Enemy::Enemy() : Character() {
 	if (!Scorpion.openFromFile("Audio/Scorpion.wav"))
 		std::cout << "Error\n";
 
+
+	continuousK = 0;
+	continuousP = 0;
+
+	continuousKicking = false;
+	continuousPunching = false;
+	isFrozen = false;
+	fatalityOnce = false;
+	playFire = false;
+	special = false;
+	pull = false;
+	slingFail = false;
+	burnFoe = false;
+
+	counterSpecial = 0;
+	newCount = 0;
+	counterBreak = 1;
+	counterSpitFire = 0;
+	counterFire = 0;
+	counterVictory = 0;
+
 	blockingPunch.setVolume(20);
 	kickingSound.setVolume(20);
+
+	spear.setTexture(texture2);
+	rope.setTexture(texture2);
+
+	spear.setTextureRect(sf::IntRect(0, 105+106, 35, 15));
+	rope.setTextureRect(sf::IntRect(0, 105 + 106 + 15 + 10+15, 175, 25));
+
+	rope.setPosition(sf::Vector2f(spear.getGlobalBounds().width, spear.getPosition().y));
+	spear.setPosition(sf::Vector2f(0, rope.getGlobalBounds().height / 2));
+
+	rope.setScale(sf::Vector2f(1.5, 1.5));
+	spear.setScale(sf::Vector2f(1.5, 1.5));
 
 
 	fire.setTexture(texture2);
@@ -66,19 +99,14 @@ void Enemy::updateMovement()
 	//##########################
 	// deleted input variable (rightkeyPressed, leftKeyPressed ...)
 	//##########################
-	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
+	//blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
 	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::E);
 
 	//leftKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
 	if (!downKeyPressed)
 		isCrouching = false;
 
-	if (isWon) {
-
-
-		return;
-	}
-	else if (isFrozen && hitByFatality) {
+	if (isFrozen && hitByFatality) {
 
 		switch (counterBreak) {
 		case 1: sprite.setTextureRect(sf::IntRect(50, 496, 51, 106));
@@ -87,6 +115,7 @@ void Enemy::updateMovement()
 			breakIce.play();
 			break;
 		case 3: sprite.setTextureRect(sf::IntRect(50+51+51+5, 496, 90, 106));
+			breakIce.play();
 			break;
 		case 4:sprite.setTextureRect(sf::IntRect(50+51+51+90+5, 496, 98, 106));
 			break;
@@ -100,6 +129,7 @@ void Enemy::updateMovement()
 			break;
 		case 9:sprite.setTextureRect(sf::IntRect(50+51+51+90+98+102+109+117+121+15, 496, 118, 106));
 			isDone = true;
+			
 			break;
 		default:std::cout << "Error\n";
 			break;
@@ -120,8 +150,8 @@ void Enemy::updateMovement()
 			punching = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
 		if (!kicking && isFinishedReacting)
 			kicking = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
-		if(!special && isFinishedReacting)
-			special = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+		//if(!special && isFinishedReacting)
+			//special = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
 		if (isHit)
 		{
 			clock.restart();
@@ -230,22 +260,46 @@ void Enemy::updateMovement()
 		}
 
 		else if (special) {
+
 			sprite.setTexture(texture2);
-			pull = true;
+
+			if (newCount == 0) {
+				spear.setPosition(sprite.getPosition());
+				rope.setPosition(sf::Vector2f(spear.getGlobalBounds().width + spear.getPosition().x, spear.getPosition().y));
+				spear.setPosition(sf::Vector2f(sprite.getPosition().x, (rope.getGlobalBounds().height / 2) + rope.getPosition().y));
+				spear.move(0, 20);
+				rope.move(0, 20);
+			}
+
+			//pull = true;
 			if (slingFail) {
 				counterSpecial = 0;
 				special = false;
 				sprite.setTexture(texture);
+				std::cout << "slingfail\n";
 			}
 
 			if (!pull) {
 				counterSpecial = 0;
 				sprite.setTextureRect(sf::IntRect(counterSpecial * 90, DIZZY_HEIGHT, 90, 105));
+				std::cout << "pull\n";
+					//rope.setPosition(sf::Vector2f(spear.getGlobalBounds().width, spear.getPosition().y));
+					//spear.setPosition(sf::Vector2f(sprite.getPosition().x, rope.getGlobalBounds().height / 2));
+					
+
+					spear.move(sf::Vector2f(-15, 0));
+
+					rope.move(sf::Vector2f(-15, 0));
+					//std::cout << "slinging\n";
 			}
 			else {
 				sprite.setTextureRect(sf::IntRect(counterSpecial * 90, DIZZY_HEIGHT, 90, 105));
+				//spear.setTextureRect(sf::IntRect(0, 105 + 106, 35, 15));
+				//rope.setTextureRect(sf::IntRect(0, 105 + 106 + 15 + 10 + 15, 175, 25));
+
 
 			}
+			
 
 			if (counter % 6 == 0)
 				counterSpecial++;
@@ -255,6 +309,8 @@ void Enemy::updateMovement()
 				special = false;
 				sprite.setTexture(texture);
 			}
+
+			newCount++;
 
 		}
 
@@ -477,195 +533,514 @@ void Enemy::calculateDistance(Player& p)
 {
 	distance = this->sprite.getPosition().x - p.sprite.getPosition().x;
 }
-
 void Enemy::fight(Player& p)
+
 {
+
 	int randNum;
+
+
 
 	srand(time(NULL));
 
+
+
 	/*
-	i want to move enemy as close as 40 px
-	and make a move
-	then move back to original distance
-	(maybe to change the distance between characters)
+
+
+
+	once player is hit or is being attacked
+
+	cahnges enemy to start to block
+
+
+
+	need to make it that enemy doent leave the screen
+
+
+
 	*/
-	if (isPunched)
-		continuous++;
+
+	if (blocking) {
+		randNum = rand() % 5;
+
+		if (randNum == 2 || randNum == 5 || randNum == 4)
+			blocking = false;
+	}
+
+	if (isPunched) {
+
+		continuousP++;
+
+		if (continuousP >= 3) {
+
+			continuousPunching = true;
+
+		}
+		randNum = rand() % 5;
+
+		if (randNum == 1)
+			blocking = true;
+		else if (randNum == 3)
+			rightKeyPressed = true;
+		else if (randNum == 0)
+			downKeyPressed = true;
+
+		return;
+	}
+
+	else if (!isPunched) {
+
+		continuousP = 0;
+
+		continuousPunching = false;
+
+	}
+
+
+
+	else if (isKicked) {
+
+		continuousK++;
+
+
+
+		if (continuousK >= 3) {
+
+			continuousKicking = true;
+
+		}
+
+	}
+
+	else if (!isKicked) {
+
+
+
+		continuousK = 0;
+
+		continuousKicking = false;
+
+	}
+
+
 
 	if (distance > 190) {
 
+
+
 		isMoving = true;
+
 		ableToMoveDown = true;
+
 		leftKeyPressed = true;
-		ableToMoveLeft = true;
+
 	}
+
+	//walking while player not punching
+
+	else if (distance < 190 && distance > 62 && !p.getIsPunching()) {
+
+
+
+		randNum = rand() % 3 + 1;
+
+		if (randNum == 2)
+
+		{
+
+			isMoving = true;
+
+			ableToMoveDown = true;
+
+			leftKeyPressed = true;
+
+		}
+
+		else if (randNum == 3)
+
+		{
+
+			randNum = rand() % 2 + 1;
+
+			isMoving = true;
+
+			ableToMoveDown = true;
+
+			rightKeyPressed = true;
+
+			if (randNum == 1)
+
+				punching = true;
+
+		}
+
+	}
+
+	// end my nigga
+
+
 
 	// cornering player
+
 	else if (p.sprite.getPosition().x < 20 && distance < 190 && distance >62) {
+
 		isMoving = true;
+
 		ableToMoveDown = true;
+
 		leftKeyPressed = true;
-		ableToMoveLeft = true;
+
 	}
 
-	else if (distance <= 74) {
 
+
+
+
+	if (distance <= 63) {
+
+
+
+		//blocking = true;
+
+		//cout << "Bruuuuhh Block" << endl;
 
 		randNum = rand() % 5 + 1;
 
+
+
 		//std::cout << this->sprite.getPosition().x << std::endl;
+
+
+
+		/* if(p.getIsPunching()){
+
+
+
+		blocking = true;
+
+		}
+
+		else
+
+		blocking = false;
+
+		*/
+
+
+
+
+
+
+
+
 
 		if (randNum == 2) {
 
+
+
 			isMoving = true;
+
 			ableToMoveDown = true;
+
 			rightKeyPressed = true;
+
 		}
+
+
+
 		else {
 
+			randNum = rand() % 6 + 1;
 
-			if (bar.lengthBox > 120)
+
+
+			if (p.getIsPunching()) {
+
+
+
+				isCrouching = true;
+
+				//std::cout << "Bruuuuhh Block" << std::endl;
+
+			}
+
+
+
+			else if (bar.lengthBox > 120)
+
 			{
 
-				randNum = rand() % 5 + 1;
-				if (randNum == 1 || continuous > 5) {
-					blocking = true;
-					continuous = 0;
+
+
+				if (continuousPunching && distance < 80) {
+
+					downKeyPressed = true;
+
 				}
+
+				else if (continuousKicking) {
+
+					blocking = true;
+
+				}
+
 				else if (randNum == 2) {
 
 					kicking = true;
-					//rect.move(5, 0);
+
+					rect.move(9, 0);
+
+
+
 				}
-				else if(randNum == 3 || randNum == 4)
+
+				else if ((randNum == 3 || randNum == 4)) {
+
 					punching = true;
 
-			}
-			else if (bar.lengthBox <= 120)
-			{
-				blocking = true;
+
+
+				}
+
+
+
+
 
 			}
+
+
 
 		}// end else
+
 	}// end else if
 
 
 
-	if (sprite.getPosition().x > 755 && distance < 74)
+
+
+	if (sprite.getPosition().x > 755 && distance < 63)
+
 	{
+
 		randNum = rand() % 4 + 1;
-		if(randNum == 2)
+
+		if (randNum == 2)
+
 			punching = true;
+
 	}
 
 
 
 	/*
 
+
+
 	WHEN enemy is against his own wall punch more
+
 	-when player !punching and close to enemy More effiecent
 
 
+
+
+
 	*/
 
+
+
 	//########################### Work with blocking but wong varibale for hiting##############
+
 	/*
+
 	else if (distance <= 78){
+
+
 
 	srand(time(NULL));
 
+
+
 	randNum = rand() % 5 + 1;
+
+
 
 	std::cout << distance << std::endl;
 
+
+
 	if(randNum!= 2){
 
+
+
 	isMoving = true;
+
 	ableToMoveDown = true;
+
 	rightKeyPressed = true;
+
 	}
+
 	else{
 
 
+
+
+
 	if(bar.hitDamage > 120)
+
 	{
+
+
 
 	randNum = rand() % 5 + 1;
+
 	if(randNum == 1)
+
 	blocking = true;
+
 	else if (randNum == 2){
 
+
+
 	kicking = true;
+
 	rect.move(18,0);
+
 	}
+
 	else
+
 	punching = true;
 
+
+
 	}
+
 	else if( bar.hitDamage <= 120 && distance < 74)
+
 	{
+
 	blocking = true;
 
+
+
 	}
 
+
+
 	}// end else
+
 	}// end else if
+
+
 
 	*/
 
+
+
 }// end of move
+
  //##########################################################################
+
  /*
+
  void Enemy::walkLeft(int pixelDistance) {
+
  while (isMoving) {
+
  if (ableToMoveLeft) {
+
  isMoving = true;
+
  rect.move(-4, 0);
+
  ableToMoveDown = true;
+
  sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 5 + 100 - 10, WALKING_WIDTH, 110));
+
  }
+
  }
+
  }
+
  void Enemy::walkRight(int pixelDistance) {
+
  while (isMoving) {
+
  if (ableToMoveRight) {
+
  isMoving = true;
+
  rect.move(4, 0);
+
  ableToMoveDown = true;
+
+
 
  sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 5 + 100 - 10, WALKING_WIDTH, 110));
+
  }
+
  }
+
  }
+
  void Enemy::punch() {
+
  while (punching) {
+
  sprite.setTextureRect(sf::IntRect(counterPunching * PUNCHING_WIDTH, PUNCHING_POS, PUNCHING_WIDTH, PUNCHING_HEIGHT));//70, 106 * 6 + 103, 70, 106));
+
  sprite.setPosition(sf::Vector2f(sprite.getPosition().x - 40, sprite.getPosition().y));
+
  if (counter % 3 == 0)
+
  {
+
  counterPunching++;
+
  }
+
  if (counterPunching == 3) {
+
  counterPunching = 0;
+
  punching = false;
+
  }
+
  }
+
  }
+
+
 
  void Enemy::kick() {
- while (kicking) {
- sprite.setTextureRect(sf::IntRect(counterKicking * KICKING_WIDTH, KICKING_POS, KICKING_WIDTH, KICKING_HEIGHT));//85, 12 * 106 + 15, 85, 110));
- sprite.setPosition(sf::Vector2f(sprite.getPosition().x - 40, sprite.getPosition().y));
- if (counter % 3 == 0)
- counterKicking++;
- if (counterKicking == 5) {
- counterKicking = 0;
- kicking = false;
- }
- }
- }
- */
- //#####################################################
 
+ while (kicking) {
+
+ sprite.setTextureRect(sf::IntRect(counterKicking * KICKING_WIDTH, KICKING_POS, KICKING_WIDTH, KICKING_HEIGHT));//85, 12 * 106 + 15, 85, 110));
+
+ sprite.setPosition(sf::Vector2f(sprite.getPosition().x - 40, sprite.getPosition().y));
+
+ if (counter % 3 == 0)
+
+ counterKicking++;
+
+ if (counterKicking == 5) {
+
+ counterKicking = 0;
+
+ kicking = false;
+
+ }
+
+ }
+
+ }
+
+ */
+
+ //#####################################################

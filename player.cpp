@@ -5,18 +5,15 @@ Player::Player() : Character()
 	clock.restart();
 	if (!texture.loadFromFile("Images/SubZeroMoves.png"))
 		std::cout << "Error" << std::endl;
-	else
-	{
+	else {
 		sprite.setTexture(texture);
 	}
-
 	if (!blockingPunch.openFromFile("Audio/SubZeroBlocking.ogg"))
 		std::cout << "Error\n";
 	if (!kickingSound.openFromFile("Audio/SubZeroKicking.ogg"))
 		std::cout << "Error\n";
 	if (!freezing.openFromFile("Audio/SubZero_FreezeSound.wav"))
 		std::cout << "Error\n";
-	
 	if (!frozenSolid.openFromFile("Audio/SubZero_FreezingSomeone.wav"))
 		std::cout << "Error\n";
 	if (!subZero.openFromFile("Audio/SubZero.wav"))
@@ -27,7 +24,17 @@ Player::Player() : Character()
 	blockingPunch.setVolume(20);
 	kickingSound.setVolume(20);
 
-	
+	counterFatalityHit = 0;
+	fatalityHit = false;
+	fatalityFrozen = false;
+	isStopped = false;
+	finishHim = false;
+	burning = false;
+	hitBySpecial = false;
+
+	counterWin = 0;
+	counterDizzy = 0;
+	counterBurning = 0;
 
 	ice.setTexture(texture2);
 
@@ -52,28 +59,33 @@ void Player::updateIce() {
 
 void Player::updateMovement()
 {
-	//*********** Playjier input *****************
+	//*********** Playier input *****************
 	counter++;
-	rightKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
-	leftKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::B);
+	rightKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+	leftKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+	downKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+	blocking = sf::Keyboard::isKeyPressed(sf::Keyboard::I);
 
 	if (!downKeyPressed)
 		isCrouching = false;
-	//////////
 	if (fatalityReady && !performFatality)
 		performFatality = sf::Keyboard::isKeyPressed(sf::Keyboard::F);
-	//std::cout << counterIsKicked << std::endl;
 	//*****************************************
-	//std::cout << "is in update\n";
+
+	// 5 possible outer conditions can fall in
+	// 1) isWon - will do animations for winning
+	// 2) burning - burn animation for when defeated
+	// 3) performFatality - animation for performing ice animation
+	// 4) ! isDefeated - if the player has not been defeated, allow character to do animations (block, punch...) && reactions
+			//Much more conditions in this conditional b/c it contols about every common animation
+	// 5) else - do dizzy animation until enemy does fatality
+	//*****************************************
 	if (isWon) {
 		sprite.setTexture(texture2);
 		if(counterWin == 0)
 			sprite.setTextureRect(sf::IntRect(counterWin * 50, (820 + 110) + 25 + 290, 50, 106));
 		if(counterWin == 1)
 			sprite.setTextureRect(sf::IntRect(counterWin * 50, (820 + 110) + 25 + 282, 50, 115));
-
 		if (counterWin == 0)
 			subZero.play();
 		if (counterWin == 10)
@@ -82,32 +94,20 @@ void Player::updateMovement()
 			counterWin++;
 		if (counterWin == 20)
 			isVictor = true;
-
 		return;
 	}
 	else if (burning) {
-		//std::cout << "burning\n";
 		sprite.setTexture(texture3);
-
 		sprite.setTextureRect(sf::IntRect(counterBurning * 75, (820 + 110) + 25 + 45 + 75+85+60, 75, 110));
 		if (counterBurning == 0) {
 			sprite.move(-20, 0);
 			burningAlive.play();
 		}
-
-
 		if (counter % 6 == 0)
 			counterBurning++;
 		if (counterBurning == 8)
 			counterBurning = 7;
-
 	}
-	//added else if
-	/*
-	if (fatalityReady && !performFatality)
-		performFatality = sf::Keyboard::isKeyPressed(sf::Keyboard::F);
-		*/
-	//added else if
 	else if (performFatality) {
 		if (!notSet) {
 			notSet = true;
@@ -117,8 +117,6 @@ void Player::updateMovement()
 			ice.setTextureRect(sf::IntRect(0, 0, 0, 0));
 			performFatality = false;
 			finishHim = true;
-			//sprite.setTexture(texture);
-			std::cout << "changing sprite sheet\n";
 			return;
 		}
 		if (!isDoneIce) {
@@ -132,7 +130,6 @@ void Player::updateMovement()
 				sprite.setTextureRect(sf::IntRect(counterFatality * 110, 820, 145, 110));
 			else 
 				sprite.setTextureRect(sf::IntRect(counterFatality * 100, 820, 100, 110));
-
 		}
 		if (counter % 2 == 0 && !isDoneIce)
 			counterFatality++;
@@ -148,20 +145,8 @@ void Player::updateMovement()
 				iceRect.move(9, 0);
 			}
 			else {
-				
-				if (counterFatalityHit == 0) {
-					//iceRect.setPosition()
+				if (counterFatalityHit == 0)
 					ice.setTextureRect(sf::IntRect(0, (820 + 110) + 25 + 45 + 75, 60, 85));
-					//ice.setTextureRect(sf::IntRect(0, (820 + 110) + 25, 75, 45));
-				}
-				/*
-				else if(counterFatalityHit == 1) 
-					ice.setTextureRect(sf::IntRect(0, (820 + 110) + 25 + 45, 50, 60));
-				else if(counterFatality == 2)
-					ice.setTextureRect(sf::IntRect(0, (820 + 110) + 25 + 45 + 60, 50, 75));
-				else if(counterFatality == 3)
-					ice.setTextureRect(sf::IntRect(0, (820 + 110) + 25 + 45 + 75, 60, 85));
-					*/
 				if (counter % 2 == 0)
 					counterFatalityHit++;
 				if (counterFatalityHit == 4)
@@ -170,32 +155,20 @@ void Player::updateMovement()
 					ice.setTextureRect(sf::IntRect(300, (820 + 110) + 25 + 45 + 75, 0, 0));
 					counterFatalityHit = 4;
 				}
-
 			}
 			updateIce();
 		}
-
-
 		return;
 	}
-
-
 	else if (!isDefeated) {
 		if (finishHim) {
 			sprite.setTexture(texture);
 			finishHim = false;
 		}
-
-		if (!punching) {
-			punching = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
-			//std::cout << "punching true\n";
-		}
-		if (!kicking) {
-			kicking = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
-			//std::cout << "kicking true\n";
-		}
-
-
+		if (!punching)
+			punching = sf::Keyboard::isKeyPressed(sf::Keyboard::J);
+		if (!kicking)
+			kicking = sf::Keyboard::isKeyPressed(sf::Keyboard::O);
 		if (stopReacting) {
 			punching = false;
 			kicking = false;
@@ -203,15 +176,12 @@ void Player::updateMovement()
 			isFinishedReacting = true;
 			stopReacting = false;
 		}
-		else if (isHit)
-		{
-			//std::cout << "in ishit\n";
+		else if (isHit) {
 			clock.restart();
 			isFinishedReacting = false;
 			isHit = false;
 		}
 		else if (!isFinishedReacting) {
-			//std::cout << "is in reacting\n";
 			if (isPunched) {
 				if (clock.getElapsedTime().asSeconds() > 0.02)
 				{
@@ -228,11 +198,9 @@ void Player::updateMovement()
 				}
 			}
 			else if (isKicked) {
-
 				switch (counterIsKicked) {
 				case 0: sprite.setTextureRect(sf::IntRect(counterIsKicked * 90, 13 * 106 + 15, 90, 106));
 					kicked.play();
-					//rect.move(, 0);
 					break;
 				case 1:
 					sprite.setTextureRect(sf::IntRect(counterIsKicked * 90, 13 * 106 + 15, 90, 106));
@@ -253,18 +221,15 @@ void Player::updateMovement()
 					clock.restart();
 					break;
 				}
-				
 			}
 			else if (gettingUp) {
 				if (clock.getElapsedTime().asSeconds() > 0.1) {
 					sprite.setTextureRect(sf::IntRect(counterGetUp * 90, 3 * 106, 90, 106));
 					rect.move(3, 0);
-					//std::cout << "getting up\n";
 				}
 			}
 			else
 				isFinishedReacting = true;
-
 
 			if (counter % 4 == 0 && isKicked) {
 				counterIsKicked++;
@@ -282,7 +247,6 @@ void Player::updateMovement()
 				counterGetUp = 0;
 				gettingUp = false;
 			}
-
 		}
 		else if (blocking && downKeyPressed) {
 			if (isKicked) {
@@ -292,7 +256,6 @@ void Player::updateMovement()
 					blockingKick.play();
 					once = true;
 				}
-
 			}
 			else {
 				isMoving = false;
@@ -301,7 +264,6 @@ void Player::updateMovement()
 			}
 		}
 		else if (blocking) {
-			//std::cout << "blocking\n";
 			if (isPunched) {
 				sprite.setTextureRect(sf::IntRect(1 * BLOCK_WIDTH, BLOCKING_POS, BLOCK_WIDTH, BLOCK_HEIGHT));
 				isPunched = false;
@@ -309,7 +271,6 @@ void Player::updateMovement()
 					blockingPunch.play();
 					once = true;
 				}
-
 			}
 			else {
 				isMoving = false;
@@ -317,8 +278,7 @@ void Player::updateMovement()
 				sprite.setTextureRect(sf::IntRect(0 * BLOCK_WIDTH, BLOCKING_POS, BLOCK_WIDTH, BLOCK_HEIGHT));
 			}
 		}
-		else if (punching)
-		{
+		else if (punching) {
 			switch (counterPunching) {
 			case 2:
 				sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 70, 106));
@@ -328,7 +288,6 @@ void Player::updateMovement()
 				break;
 			default:
 				sprite.setTextureRect(sf::IntRect(counterPunching * 50, 106 * 6 + 103, 50, 106));
-
 				break;
 			}
 			if (counter % 3 == 0)
@@ -341,7 +300,6 @@ void Player::updateMovement()
 			}
 		}
 		else if (kicking) {
-			//std::cout << "kicking\n";
 			if (!stopReacting) {
 				sprite.setTextureRect(sf::IntRect(counterKicking * 85, 12 * 106 + 15, 85, 110));
 				if (counterKicking == 1)
@@ -357,12 +315,9 @@ void Player::updateMovement()
 				kicking = false;
 				stopReacting = false;
 			}
-
 		}
-
 		else if (rightKeyPressed)
 		{
-			//std::cout << "right key pressed\n";
 			if (ableToMoveRight) {
 				isMoving = true;
 				rect.move(4, 0);
@@ -371,90 +326,66 @@ void Player::updateMovement()
 			if (counterWalking == 2)
 			{
 				sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 10, WALKING_WIDTH, 110));
-
 			}
 			else {
 				sprite.setTextureRect(sf::IntRect(counterWalking * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT - 2));
 			}
-
 		}
-
 		else if (leftKeyPressed) {
-			//std::cout << "left key pressed\n";
 			if (ableToMoveLeft) {
 				isMoving = true;
 				rect.move(-4, 0);
 				ableToMoveDown = true;
-				if (counterWalking == 2)
-				{
+				if (counterWalking == 2) {
 					sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, 110));
 				}
 				else {
-
 					sprite.setTextureRect(sf::IntRect(counterWalkingBackwards * WALKING_WIDTH, 106 * 6 - 5, WALKING_WIDTH, WALKING_HEIGHT));
 				}
 			}
 		}
 		else if (downKeyPressed) {
-			//std::cout << "down key pressed\n";
 			isMoving = false;
-
 			sprite.setTextureRect(sf::IntRect(0, 4 * STANCE_HEIGHT - 3, 50, 104));
 			isCrouching = true;
-
 		}
-
 		else {
-			//std::cout << "stance mode\n";
 			isMoving = false;
 			sprite.setTextureRect(sf::IntRect(counterStance * STANCE_WIDTH, 0, STANCE_WIDTH, STANCE_HEIGHT));
 			isCrouching = false;
 		}
 		//*****************************************************
-
 		//************* counters are to slow down animation to normal speed *********************8
 		if (counter % 7 == 0 && leftKeyPressed)
 			counterWalkingBackwards--;
-
-		else if (counter % 7 == 0)
-		{
+		else if (counter % 7 == 0) {
 			counterWalking++;
 			counterStance++;
 			counterBlocking++;
-
 		}
-
 		if (counterWalkingBackwards == -1)
 			counterWalkingBackwards = 3;
-
 		if (counterWalking == 3)
 			counterWalking = 0;
 		if (counterStance == 10)
 			counterStance = 0;
 		if (counterBlocking == 1)
 			counterBlocking = 0;
-
-
 		updateRect();
 	}
 	else {
-		
 		if (isDefeated) {
 			sprite.setTexture(texture2);
-
 			if (hitByFatality) {
 				burning = true;
 				isDefeated = false;
 			}
 			sprite.setTextureRect(sf::IntRect(counterDizzy * 40, 600, 40, 105));
-
 			if (counter % 5 == 0)
 				counterDizzy++;
 			if (counterDizzy == 5)
 				counterDizzy = 0;
 		}
-		
-		//isDone = true;
 	}
 }
 void Player::updateRect() {
@@ -462,8 +393,6 @@ void Player::updateRect() {
 		hitBox.setPosition(sf::Vector2f(sprite.getPosition().x, sprite.getPosition().y+(STANCE_HEIGHT/2)));
 	else
 		hitBox.setPosition(sprite.getPosition());
-	//rect.setSize(sf::Vector2f(sprite.getGlobalBounds().width, sprite.getGlobalBounds().height));
-
 	if (punching) {
 		attackBox.setSize(sf::Vector2f(
 		sprite.getGlobalBounds().width-10, sprite.getGlobalBounds().height));

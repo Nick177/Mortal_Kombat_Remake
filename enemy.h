@@ -34,45 +34,68 @@ private:
 	sf::Music breakIce;
 	sf::Music Scorpion;
 //###################################################
+	//AI stuff
+	int continuousP;
+	int continuousK;
+	bool continuousPunching;
+	bool continuousKicking;
+	//**********************************************
 
 public:
 	sf::Sprite fire;
 	sf::RectangleShape fireRect;
-	bool isFrozen = false;
-	bool fatalityOnce = false;
-	bool playFire = false;
+	bool playFire;
 
-	bool special = false;
-	int counterSpecial = 0;
+	bool isFrozen;
+	bool fatalityOnce;
+	//Get Over Here stuff
+	bool special;
+	int counterSpecial;
 	Sprite rope;
-	bool pull = false;
-	bool slingFail = false;
+	Sprite spear;
+	bool pull;
+	bool slingFail;
+	RectangleShape ropeRect;
+	RectangleShape spearRect;
+	int newCount;
+	//****************************
 
-	int counterBreak = 1;
-	int counterSpitFire = 0;
-	int counterFire = 0;
-	bool burnFoe = false;
-	int counterVictory = 0;
+	int counterBreak;
+	int counterSpitFire;
+	int counterFire;
+	bool burnFoe;
+	int counterVictory;
+
 	sf::Vector2f pos;
+
 	Enemy();
+	//Since the enemy is controlled by the AI,
+	//it has almost the same functionality for the updateFunctions, except slightly different
+	//for some specific things
 	virtual void updateMovement();
 	virtual void updateRect();
 	virtual void update();
+	//***********************************************
+	//AI function specific
+	//*********************
+	//precondition: player is required
+	//postcondition: distance from enemy to player is calculated
+	//Summary: used to find distance between 2 players to enable functionality
 	void calculateDistance(Player &p);
+	//*********************
+	//precondition: player is required
+	//postcondtion: set the enemy to do something
+	//Summary: randomizes the enemy to do something
 	void fight(Player &p);
+	//*********************
+	//precondtion: requires enemy is defeated
+	//postcondition: does the fatality for the enemy
+	//summary: this function is to make the AI fight back on its own
 	void doFatality(sf::Vector2f);
+	//********************
+	//does the victory pose
 	void victory();
-
-
-//################ functions for walking punching kicking 5/4 ###############
-	/*
-	void walkLeft(int pixelDistance);
-	void walkRight(int pixelDistance);
-	void punch();
-	void kick();
-	*/
-
-	//#######################################################################
+	//***********************************************
 };
 
 #endif

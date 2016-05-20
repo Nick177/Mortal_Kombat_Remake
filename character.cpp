@@ -35,12 +35,15 @@ Character::Character()
 	counterGetUp = 0;
 	counterDizzy = 0;
 	counterFatality = 0;
+	counterIce = 0;
 
 	isMoving = false;
 	isDone = false;
 	isVictor = false;
 	isDefeated = false;
 	isWon = false;
+	isDoneIce = false;
+	hitByFatality = false;
 	//Need to see the difference between the different values
 	movementSpeed = 0.5;
 	counterWalking = 0;
@@ -65,7 +68,6 @@ Character::Character()
 	isKicked = false;
 	gettingUp = false;
 	isCrouching = false;
-	isKO = false;
 	fatalityReady = false;
 	performFatality = false;
 	isDoneReacting = false;
@@ -85,7 +87,6 @@ Character::Character()
 	blockBox.setPosition(rect.getPosition());
 
 	isFinishedReacting = true;
-	attackType = 0; // None
 
 	rect.setOutlineColor(sf::Color::Green);
 	rect.setOutlineThickness(5);

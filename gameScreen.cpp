@@ -97,7 +97,6 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	sf::Font font;
 	sf::Text gameOverTile;
 
-
 	if (!font.loadFromFile("MK4.TTF"))
 	{
 		std::cout << "Font not loading correclty!!\n";
@@ -107,7 +106,7 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	gameOverTile.setFont(font);
 	gameOverTile.setCharacterSize(fontSize);
 	gameOverTile.setString("GameOver");
-	gameOverTile.setPosition(window.getSize().x / 2 - 200, window.getSize().y / 4);
+	gameOverTile.setPosition(window.getSize().x / 2 - 200, window.getSize().y / 12);
 	gameOverTile.setColor(sf::Color::Red);
 
 	//###################################################################################
@@ -221,7 +220,7 @@ int GameScreen::Run(sf::RenderWindow &window) {
 
 		if (!enemy.getIsDefeated()) {
 			enemy.calculateDistance(player);
-			//enemy.fight(player);
+			enemy.fight(player);
 		}
 
 		//std::cout << "Enemy Health: " << enemy.getHealth() << std::endl;
@@ -238,7 +237,7 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		}
 
 		if (enemy.getHitByFatality()) {
-			enemy.setIsKO(true);
+			//enemy.setIsKO(true);
 		}
 
 		if (enemy.getIsDefeated()) {
@@ -311,6 +310,9 @@ int GameScreen::Run(sf::RenderWindow &window) {
 		window.draw(player.bar.healthOutline);
 		window.draw(player.bar.healthBox);
 
+		//window.draw(enemy.spear);
+		//window.draw(enemy.rope);
+
 		enemy.bar.healthBox.setPosition(sf::Vector2f(500, 0));
 		enemy.bar.healthOutline.setPosition(sf::Vector2f(500, 0));
 		//window.draw(player.rect);
@@ -347,10 +349,18 @@ int GameScreen::Run(sf::RenderWindow &window) {
 	} // end outer while loop (Game loop)
 	clock.restart();
 
-	while (clock.getElapsedTime().asSeconds() < 7) {
+	while (clock.getElapsedTime().asSeconds() < 5) {
 		window.draw(gameOverTile);
 		window.display();
 
+	}
+	clock.restart();
+	bool pressed = false;
+	while (clock.getElapsedTime().asSeconds() < 5) {
+		pressed = Keyboard::isKeyPressed(sf::Keyboard::M);
+
+		if (pressed)
+			return 3;
 	}
 
 	return -1;
